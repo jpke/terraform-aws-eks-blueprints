@@ -1,0 +1,21 @@
+redis-ha:
+  enabled: true
+
+controller:
+  enableStatefulSet: true
+
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+  ingress:
+    enabled: true
+    annotations: {}
+    ingressClassName: nginx
+    hosts:
+    - argo-eks-blueprints.jpearnest.com
+
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
