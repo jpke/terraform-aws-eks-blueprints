@@ -61,7 +61,7 @@ module "eks_blueprints" {
       instance_types  = ["m5.large"]
       subnet_ids      = module.vpc.private_subnets
 
-      desired_size = 3
+      desired_size = 2
       max_size     = 10
       min_size     = 2
     }
@@ -75,13 +75,9 @@ module "eks_blueprints_kubernetes_addons" {
 
   eks_cluster_id = module.eks_blueprints.eks_cluster_id
 
-  # EKS Managed Add-ons
-  enable_amazon_eks_coredns    = true
-  enable_amazon_eks_kube_proxy = true
-
-  enable_argocd         = true
+  enable_argocd = true
   argocd_helm_config = {
-    values  = [templatefile("${path.module}/argocd_values.yaml", {})]
+    values = [templatefile("${path.module}/argocd_values.yaml", {})]
   }
   argocd_manage_add_ons = true # Indicates that ArgoCD is responsible for managing/deploying add-ons
   argocd_applications = {
@@ -97,23 +93,22 @@ module "eks_blueprints_kubernetes_addons" {
     }
   }
 
-  # Add-ons
-  enable_aws_for_fluentbit  = true
-  enable_aws_load_balancer_controller = true
-  enable_cert_manager       = true
-  enable_cluster_autoscaler = true
-  enable_metrics_server     = true
-  enable_argo_rollouts      = true
+  # EKS Managed Add-ons
+  enable_amazon_eks_coredns    = true
+  enable_amazon_eks_kube_proxy = true
 
-  enable_ingress_nginx = true
-  # ingress_nginx_helm_config = {
-  #   version = "4.0.17"
-  #   values  = [templatefile("${path.module}/nginx_values.yaml", {})]
-  # }
+  # Add-ons
+  enable_aws_for_fluentbit            = true
+  enable_aws_load_balancer_controller = true
+  enable_cert_manager                 = true
+  enable_cluster_autoscaler           = true
+  enable_metrics_server               = true
+  enable_argo_rollouts                = true
+  enable_ingress_nginx                = true
 
   tags = local.tags
 
-  depends_on = [module.eks_blueprints.managed_node_groups]
+  depends_on = [module.eks_blueprints.managed_node_groups, module.vpc]
 }
 
 #---------------------------------------------------------------
