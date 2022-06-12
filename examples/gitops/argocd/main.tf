@@ -83,12 +83,12 @@ module "eks_blueprints_kubernetes_addons" {
   argocd_applications = {
     addons = {
       path               = "chart"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-add-ons.git"
+      repo_url           = "https://github.com/jpke/eks-blueprints-add-ons.git"
       add_on_application = true
     }
     workloads = {
       path               = "envs/dev"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
+      repo_url           = "https://github.com/jpke/eks-blueprints-workloads.git"
       add_on_application = false
     }
   }

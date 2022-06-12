@@ -10,10 +10,20 @@ server:
     minReplicas: 2
   ingress:
     enabled: true
-    annotations: {}
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.org/ssl-passthrough: "true"
+      nginx.org/backend-protocol: "HTTPS"
     ingressClassName: nginx
     hosts:
-    - argo-eks-blueprints.jpearnest.com
+    - argo.eks-blueprints.jpearnest.com
+    tls:
+    - secretName: argocd-tls-certificate
+      hosts:
+        - argo.eks-blueprints.jpearnest.com
+    https: true
+  extraArgs:
+    - --insecure
 
 repoServer:
   autoscaling:
