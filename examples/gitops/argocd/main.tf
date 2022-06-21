@@ -43,6 +43,40 @@ locals {
   }
 }
 
+resource "aws_security_group" "nginx_ingress" {
+  name        = "allow_nginx_ingress"
+  description = "Allow TCP inbound traffic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "Allow http ingress to nginx http nodeports from public subnets and internet"
+    protocol    = "TCP"
+    from_port   = 32063
+    to_port     = 32063
+    cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+  }
+
+  ingress {
+    description = "Allow http ingress to nginx http nodeports from public subnets and internet"
+    protocol    = "TCP"
+    from_port   = 32234
+    to_port     = 32234
+    cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "allow_nginx_ingress"
+  }
+}
+
 #---------------------------------------------------------------
 # EKS Blueprints
 #---------------------------------------------------------------
@@ -66,6 +100,25 @@ module "eks_blueprints" {
       min_size     = 2
     }
   }
+
+  # node_security_group_additional_rules = {
+  #   nginx_http_ingress = {
+  #     description = "Allow http ingress to nginx http nodeports from public subnets and internet"
+  #     protocol    = "TCP"
+  #     from_port   = 32063
+  #     to_port     = 32063
+  #     type        = "ingress"
+  #     cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+  #   }
+  #   nginx_https_ingress = {
+  #     description = "Allow ingress to nginx https nodeports from public subnets and internet"
+  #     protocol    = "TCP"
+  #     from_port   = 32234
+  #     to_port     = 32234
+  #     type        = "ingress"
+  #     cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+  #   }
+  # }
 
   tags = local.tags
 }
