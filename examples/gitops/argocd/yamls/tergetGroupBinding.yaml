@@ -1,0 +1,21 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: nginx-http
+  namespace: ingress-nginx
+spec:
+  serviceRef:
+    name: ingress-nginx-controller
+    port: 80
+  targetGroupARN: <>
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: nginx-https
+  namespace: ingress-nginx
+spec:
+  serviceRef:
+    name: ingress-nginx-controller
+    port: 443
+  targetGroupARN: <>
