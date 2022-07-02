@@ -28,6 +28,20 @@ provider "helm" {
   }
 }
 
+provider "kubectl" {
+  apply_retry_count      = 30
+  host                   = module.eks_blueprints.eks_cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
+  load_config_file       = false
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
+  }
+}
+
 data "aws_availability_zones" "available" {}
 
 locals {
@@ -60,12 +74,15 @@ module "eks_blueprints" {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
       subnet_ids      = module.vpc.private_subnets
+      create_launch_template = true
 
       desired_size = 5
       max_size     = 10
       min_size     = 3
     }
   }
+
+  worker_additional_security_group_ids = [aws_security_group.nginx.id]
 
   tags = local.tags
 }
@@ -83,8 +100,13 @@ module "eks_blueprints_kubernetes_addons" {
   argocd_applications = {
     addons = {
       path               = "chart"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-add-ons.git"
+      repo_url           = "https://github.com/jpke/eks-blueprints-add-ons.git"
+      target_revision    = "downstream"
       add_on_application = true
+      values = {
+        repoUrl = "https://github.com/jpke/eks-blueprints-add-ons.git"
+        targetRevision = "downstream"
+      }
     }
     workloads = {
       path               = "envs/dev"
@@ -94,17 +116,13 @@ module "eks_blueprints_kubernetes_addons" {
   }
 
   # Add-ons
-  enable_aws_for_fluentbit  = true
-  enable_cert_manager       = true
-  enable_cluster_autoscaler = true
-  enable_karpenter          = true
-  enable_keda               = true
-  enable_metrics_server     = true
-  enable_prometheus         = true
-  enable_traefik            = true
-  enable_vpa                = true
-  enable_yunikorn           = true
-  enable_argo_rollouts      = true
+  enable_aws_for_fluentbit            = true
+  enable_cert_manager                 = true
+  enable_cluster_autoscaler           = true
+  enable_aws_load_balancer_controller = true
+  enable_metrics_server               = true
+  enable_argo_rollouts                = true
+  enable_ingress_nginx                = true
 
   tags = local.tags
 
