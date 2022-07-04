@@ -10,6 +10,7 @@ terraform apply -target="module.eks_blueprints_kubernetes_addons"
 ## Destroy
 
 terraform destroy -target="module.eks_blueprints_kubernetes_addons"
+// remove rancher finalizer from argocd namespace
 terraform destroy -target="module.eks_blueprints"
 terraform destroy -target="module.external_nlb"
 terraform destroy -target="module.vpc"
