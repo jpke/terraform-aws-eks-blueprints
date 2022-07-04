@@ -143,7 +143,12 @@ module "eks_blueprints_kubernetes_addons" {
   eks_oidc_provider    = module.eks_blueprints.oidc_provider
   eks_cluster_version  = module.eks_blueprints.eks_cluster_version
 
-  enable_argocd         = true
+  enable_argocd = true
+  argocd_helm_config = {
+    values = [templatefile("${path.module}/argocd_values.yaml", {
+      hostname = "argo.eks-blueprints.${local.domain}"
+    })]
+  }
   argocd_manage_add_ons = true # Indicates that ArgoCD is responsible for managing/deploying add-ons
   argocd_applications = {
     addons = {

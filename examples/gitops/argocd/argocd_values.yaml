@@ -1,0 +1,31 @@
+redis-ha:
+  enabled: true
+
+controller:
+  enableStatefulSet: true
+
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.org/ssl-passthrough: "true"
+      nginx.org/backend-protocol: "HTTPS"
+    ingressClassName: nginx
+    hosts:
+    - ${hostname}
+    tls:
+    - secretName: argocd-tls-certificate
+      hosts:
+        - ${hostname}
+    https: true
+  extraArgs:
+    - --insecure
+
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
