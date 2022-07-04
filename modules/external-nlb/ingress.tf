@@ -1,26 +1,26 @@
-resource aws_lb nginx {
-  name = var.cluster_name
-  internal = false
-  load_balancer_type = "network"
-  subnets = var.subnets
+resource "aws_lb" "nginx" {
+  name                       = var.cluster_name
+  internal                   = false
+  load_balancer_type         = "network"
+  subnets                    = var.subnets
   enable_deletion_protection = false
 }
 
-resource aws_lb_target_group nginx_https {
-  name = "${resource.aws_lb.nginx.name}-https"
-  port = var.https_port
-  target_type = "instance"
-  protocol = "TCP"
-  vpc_id = var.vpc_id
+resource "aws_lb_target_group" "nginx_https" {
+  name                 = "${resource.aws_lb.nginx.name}-https"
+  port                 = var.https_port
+  target_type          = "instance"
+  protocol             = "TCP"
+  vpc_id               = var.vpc_id
   deregistration_delay = 10
 }
 
-resource aws_lb_target_group nginx_http {
-  name = "${resource.aws_lb.nginx.name}-http"
-  port = var.http_port
-  target_type = "instance"
-  protocol = "TCP"
-  vpc_id = var.vpc_id
+resource "aws_lb_target_group" "nginx_http" {
+  name                 = "${resource.aws_lb.nginx.name}-http"
+  port                 = var.http_port
+  target_type          = "instance"
+  protocol             = "TCP"
+  vpc_id               = var.vpc_id
   deregistration_delay = 10
 }
 

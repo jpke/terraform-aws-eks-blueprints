@@ -10,7 +10,7 @@
 #     to_port     = var.http_port
 #     cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 8, k)])
 #   }
-  
+
 #   ingress {
 #     description = "Allow ingress to nginx https nodeports from public subnets and internet"
 #     protocol    = "TCP"
