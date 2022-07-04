@@ -1,22 +1,22 @@
 resource "aws_security_group" "nginx" {
-  name        = "${local.name}_nginx_ingress"
+  name        = "${var.cluster_name}_nginx_ingress"
   description = "Allow inbound traffic"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
     description = "Allow http ingress to nginx http nodeports from public subnets and internet"
     protocol    = "TCP"
-    from_port   = 32063
-    to_port     = 32063
-    cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+    from_port   = var.http_port
+    to_port     = var.http_port
+    cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 8, k)])
   }
   
   ingress {
     description = "Allow ingress to nginx https nodeports from public subnets and internet"
     protocol    = "TCP"
-    from_port   = 32234
-    to_port     = 32234
-    cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+    from_port   = var.https_port
+    to_port     = var.https_port
+    cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 8, k)])
   }
 
   ingress {
@@ -36,6 +36,6 @@ resource "aws_security_group" "nginx" {
   }
 
   tags = {
-    Name = "${local.name}_nginx_ingress"
+    Name = "${var.cluster_name}_nginx_ingress"
   }
 }

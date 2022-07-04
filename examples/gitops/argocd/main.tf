@@ -71,9 +71,9 @@ module "eks_blueprints" {
 
   managed_node_groups = {
     mg_5 = {
-      node_group_name = "managed-ondemand"
-      instance_types  = ["m5.large"]
-      subnet_ids      = module.vpc.private_subnets
+      node_group_name        = "managed-ondemand"
+      instance_types         = ["m5.large"]
+      subnet_ids             = module.vpc.private_subnets
       create_launch_template = true
 
       desired_size = 5
@@ -82,7 +82,7 @@ module "eks_blueprints" {
     }
   }
 
-  worker_additional_security_group_ids = [aws_security_group.nginx.id]
+  worker_additional_security_group_ids = [module.external_nlb.security_group_id]
 
   tags = local.tags
 }
@@ -104,8 +104,14 @@ module "eks_blueprints_kubernetes_addons" {
       target_revision    = "downstream"
       add_on_application = true
       values = {
-        repoUrl = "https://github.com/jpke/eks-blueprints-add-ons.git"
+        repoUrl        = "https://github.com/jpke/eks-blueprints-add-ons.git"
         targetRevision = "downstream"
+        ingressInitialization = {
+          enable       = true
+          email        = "jp@jpearnest.com"
+          http_tg_arn  = module.external_nlb.http_tg_arn
+          https_tg_arn = module.external_nlb.https_tg_arn
+        }
       }
     }
     workloads = {
@@ -165,4 +171,18 @@ module "vpc" {
   }
 
   tags = local.tags
+}
+
+
+module "external_nlb" {
+  source = "../../../modules/external-nlb"
+
+  vpc_id       = module.vpc.vpc_id
+  vpc_cidr     = local.vpc_cidr
+  azs          = local.azs
+  subnets      = module.vpc.public_subnets
+  hostname     = "jpearnest.com"
+  http_port    = "32063"
+  https_port   = "32234"
+  cluster_name = local.name
 }
