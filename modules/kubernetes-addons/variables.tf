@@ -857,3 +857,16 @@ variable "adot_collector_nginx_helm_config" {
   type        = any
   default     = {}
 }
+
+#-----------RANCHER ADDON-------------
+variable "enable_rancher" {
+  description = "Enable Rancher Addon"
+  type        = bool
+  default     = false
+}
+
+variable "rancher_helm_config" {
+  description = "Rancher Helm Chart config"
+  type        = any
+  default     = {}
+}

@@ -419,3 +419,11 @@ module "adot_collector_nginx" {
     module.opentelemetry_operator
   ]
 }
+
+module "enable_rancher" {
+  count  = var.enable_rancher ? 1 : 0
+  source = "./rancher"
+  helm_config       = var.rancher_helm_config
+  manage_via_gitops = var.argocd_manage_add_ons
+  addon_context     = local.addon_context
+}

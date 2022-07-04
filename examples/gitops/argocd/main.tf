@@ -51,8 +51,8 @@ locals {
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  http_port    = "32063"
-  https_port   = "32234"
+  http_port  = "32063"
+  https_port = "32234"
 
   domain = "jpearnest.com"
 
@@ -90,11 +90,11 @@ module "eks_blueprints" {
   # worker_additional_security_group_ids = [module.external_nlb.security_group_id]
   node_security_group_additional_rules = {
     ingress_nodes_all_tcp = {
-      description                = "Cluster control plane all ports/protocols"
-      protocol                   = "-1"
-      from_port                  = 0
-      to_port                    = 0
-      type                       = "ingress"
+      description                   = "Cluster control plane all ports/protocols"
+      protocol                      = "-1"
+      from_port                     = 0
+      to_port                       = 0
+      type                          = "ingress"
       source_cluster_security_group = true
     }
     ingress_http_port = {
@@ -102,17 +102,17 @@ module "eks_blueprints" {
       protocol    = "TCP"
       from_port   = local.http_port
       to_port     = local.http_port
-      cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
-      type                       = "ingress"
+      cidr_blocks = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+      type        = "ingress"
     }
-    
+
     ingress_https_port = {
       description = "Allow ingress to nginx https nodeports from public subnets and internet"
       protocol    = "TCP"
       from_port   = local.https_port
       to_port     = local.https_port
-      cidr_blocks      = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
-      type                       = "ingress"
+      cidr_blocks = concat(["0.0.0.0/0"], [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)])
+      type        = "ingress"
     }
 
     ingress_all_self = {
@@ -121,14 +121,14 @@ module "eks_blueprints" {
       from_port   = 0
       to_port     = 0
       self        = true
-      type                       = "ingress"
+      type        = "ingress"
     }
     egress_all = {
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = ["0.0.0.0/0"]
-      type = "egress"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+      type        = "egress"
     }
   }
 
@@ -161,14 +161,14 @@ module "eks_blueprints_kubernetes_addons" {
           https_tg_arn = "${module.external_nlb.https_tg_arn}"
         }
         rancher = {
-          enable = true
+          enable   = true
           hostname = "rancher.eks-blueprints.${local.domain}"
           ingress = {
             extraAnnotations = {
               "kubernetes.io/ingress.class" = "nginx"
             }
             tls = {
-              source: "letsEncrypt"
+              source : "letsEncrypt"
             }
           }
           letsEncrypt = {
@@ -195,6 +195,7 @@ module "eks_blueprints_kubernetes_addons" {
   enable_metrics_server               = true
   enable_argo_rollouts                = true
   enable_ingress_nginx                = true
+  enable_rancher                      = true
 
   tags = local.tags
 
