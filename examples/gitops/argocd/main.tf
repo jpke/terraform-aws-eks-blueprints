@@ -55,6 +55,7 @@ locals {
   https_port = "32234"
 
   domain = "jpearnest.com"
+  rancher_domain = "rancher.eks-blueprints.${local.domain}"
 
   tags = {
     Blueprint  = local.name
@@ -167,7 +168,7 @@ module "eks_blueprints_kubernetes_addons" {
         }
         rancher = {
           enable   = true
-          hostname = "rancher.eks-blueprints.${local.domain}"
+          hostname = local.rancher_domain
           ingress = {
             extraAnnotations = {
               "kubernetes.io/ingress.class" = "nginx"
@@ -185,11 +186,11 @@ module "eks_blueprints_kubernetes_addons" {
         }
       }
     }
-    workloads = {
-      path               = "envs/dev"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
-      add_on_application = false
-    }
+    # workloads = {
+    #   path               = "envs/dev"
+    #   repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
+    #   add_on_application = false
+    # }
   }
 
   # Add-ons
@@ -257,4 +258,10 @@ module "external_nlb" {
   http_port    = local.http_port
   https_port   = local.https_port
   cluster_name = local.name
+}
+
+module "rancher" {
+  source = "../../../modules/rancher"
+
+  domain = "https://${local.rancher_domain}"
 }

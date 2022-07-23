@@ -23,8 +23,13 @@ resource "aws_iam_access_key" "rancher_eks" {
   user = aws_iam_user.rancher_eks.name
 }
 
+resource "random_string" "random" {
+  length           = 16
+  special          = false
+}
+
 resource "aws_secretsmanager_secret" "rancher_eks" {
-  name = "rancher_eks"
+  name = "rancher_eks-${random_string.random.result}"
 }
 
 resource "aws_secretsmanager_secret_version" "rancher_eks" {
