@@ -56,6 +56,7 @@ locals {
 
   domain = "jpearnest.com"
   rancher_domain = "rancher.eks-blueprints.${local.domain}"
+  rancher_bootstrapPassword = "initialRancherAdminPassword"
 
   tags = {
     Blueprint  = local.name
@@ -151,47 +152,49 @@ module "eks_blueprints_kubernetes_addons" {
     })]
   }
   argocd_manage_add_ons = true # Indicates that ArgoCD is responsible for managing/deploying add-ons
-  argocd_applications = {
-    addons = {
-      path               = "chart"
-      repo_url           = "https://github.com/jpke/eks-blueprints-add-ons.git"
-      target_revision    = "downstream"
-      add_on_application = true
-      values = {
-        repoUrl        = "https://github.com/jpke/eks-blueprints-add-ons.git"
-        targetRevision = "downstream"
-        ingressInitialization = {
-          enable       = true
-          email        = "jp@jpearnest.com"
-          http_tg_arn  = "${module.external_nlb.http_tg_arn}"
-          https_tg_arn = "${module.external_nlb.https_tg_arn}"
-        }
-        rancher = {
-          enable   = true
-          hostname = local.rancher_domain
-          ingress = {
-            extraAnnotations = {
-              "kubernetes.io/ingress.class" = "nginx"
-            }
-            tls = {
-              source : "letsEncrypt"
-            }
-          }
-          letsEncrypt = {
-            email = "jp@jpearnest.com"
-            ingress = {
-              class = "nginx"
-            }
-          }
-        }
-      }
-    }
-    # workloads = {
-    #   path               = "envs/dev"
-    #   repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
-    #   add_on_application = false
-    # }
-  }
+  argocd_applications = {}
+  # argocd_applications = {
+  #   addons = {
+  #     path               = "chart"
+  #     repo_url           = "https://github.com/jpke/eks-blueprints-add-ons.git"
+  #     target_revision    = "downstream"
+  #     add_on_application = true
+  #     values = {
+  #       repoUrl        = "https://github.com/jpke/eks-blueprints-add-ons.git"
+  #       targetRevision = "downstream"
+  #       ingressInitialization = {
+  #         enable       = true
+  #         email        = "jp@jpearnest.com"
+  #         http_tg_arn  = "${module.external_nlb.http_tg_arn}"
+  #         https_tg_arn = "${module.external_nlb.https_tg_arn}"
+  #       }
+  #       rancher = {
+  #         enable   = true
+  #         bootstrapPassword = local.rancher_bootstrapPassword
+  #         hostname = local.rancher_domain
+  #         ingress = {
+  #           extraAnnotations = {
+  #             "kubernetes.io/ingress.class" = "nginx"
+  #           }
+  #           tls = {
+  #             source : "letsEncrypt"
+  #           }
+  #         }
+  #         letsEncrypt = {
+  #           email = "jp@jpearnest.com"
+  #           ingress = {
+  #             class = "nginx"
+  #           }
+  #         }
+  #       }
+  #     }
+  #   }
+  #   # workloads = {
+  #   #   path               = "envs/dev"
+  #   #   repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
+  #   #   add_on_application = false
+  #   # }
+  # }
 
   # Add-ons
   enable_aws_for_fluentbit            = true
@@ -263,5 +266,7 @@ module "external_nlb" {
 module "rancher" {
   source = "../../../modules/rancher"
 
+  name = local.name
   domain = "https://${local.rancher_domain}"
+  bootstrapPassword = local.rancher_bootstrapPassword
 }

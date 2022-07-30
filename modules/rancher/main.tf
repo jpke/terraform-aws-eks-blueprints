@@ -1,33 +1,49 @@
+resource "random_password" "rancher_admin_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*"
+}
+
+resource "aws_secretsmanager_secret" "rancher_admin_password" {
+  name = var.name
+
+  tags = {
+    purpose = "rancher admin secret"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "rancher_admin_password" {
+  secret_id     = aws_secretsmanager_secret.rancher_admin_password.id
+  secret_string = random_password.rancher_admin_password.result
+}
+
 provider "rancher2" {
+  alias = "bootstrap"
+
   api_url   = var.domain
   bootstrap = true
 }
 
-data "kubernetes_secret" "bootstrap_secret" {
-  metadata {
-    name      = "bootstrap-secret"
-    namespace = "cattle-system"
-  }
-  binary_data = {
-    "bootstrapPassword" = ""
-  }
+resource "rancher2_bootstrap" "admin" {
+  provider = rancher2.bootstrap
+
+  initial_password = var.bootstrapPassword
+  password = random_password.rancher_admin_password.result
 }
 
-# output "pw" {
-#   value = data.kubernetes_secret.bootstrap_secret.data
-# }
-# output "pw_base64" {
-#   value = data.kubernetes_secret.bootstrap_secret.binary_data
-# }
+provider "rancher2" {
+  alias = "admin"
 
-resource "rancher2_bootstrap" "bootstrap_secret" {
-  initial_password = data.kubernetes_secret.bootstrap_secret.data
-  password = ""
+  api_url = rancher2_bootstrap.admin.url
+  token_key = rancher2_bootstrap.admin.token
+  # insecure = true
 }
 
-# resource "rancher2_user" "foo" {
-#   name = "Foouser"
-#   username = "foo"
-#   password = "changeme"
-#   enabled = true
-# }
+resource "rancher2_user" "foo" {
+  provider = rancher2.admin
+
+  name = "Foouser"
+  username = "foo"
+  password = "defaultPasswordChangeMe"
+  enabled = true
+}
