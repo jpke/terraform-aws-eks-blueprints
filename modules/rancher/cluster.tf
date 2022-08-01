@@ -1,6 +1,6 @@
 resource "rancher2_cluster" "eks" {
   provider = rancher2.admin
-  for_each = local.clusters
+  for_each = var.clusters
 
   name = each.value.name
   description = "Terraform EKS cluster - ${each.key}"
@@ -47,7 +47,7 @@ resource "rancher2_cluster" "eks" {
 
 resource "rancher2_app_v2" "eks" {
   provider = rancher2.admin
-  for_each = local.clusters
+  for_each = var.clusters
   
   # cluster_id = rancher2_cluster.eks.id
   cluster_id = rancher2_cluster.eks[each.key].id
