@@ -13,3 +13,7 @@ variable "installRancher" {
 variable "bootstrapPassword" {
   default = "initialRancherAdminPassword"
 }
+
+variable "clusters" {
+  default = {}
+}

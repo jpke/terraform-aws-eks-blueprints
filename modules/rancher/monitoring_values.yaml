@@ -1,0 +1,5 @@
+prometheus:
+  prometheusSpec:
+    evaluationInterval: 1m
+    retentionSize: 50GiB
+    scrapeInterval: 1m
