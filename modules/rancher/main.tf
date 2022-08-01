@@ -4,19 +4,6 @@ resource "random_password" "rancher_admin_password" {
   override_special = "!#$%&*"
 }
 
-resource "aws_secretsmanager_secret" "rancher_admin_password" {
-  name = var.name
-
-  tags = {
-    purpose = "rancher admin secret"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "rancher_admin_password" {
-  secret_id     = aws_secretsmanager_secret.rancher_admin_password.id
-  secret_string = random_password.rancher_admin_password.result
-}
-
 provider "rancher2" {
   alias = "bootstrap"
 
@@ -39,11 +26,29 @@ provider "rancher2" {
   # insecure = true
 }
 
-resource "rancher2_user" "foo" {
-  provider = rancher2.admin
+# resource "rancher2_user" "foo" {
+#   provider = rancher2.admin
 
-  name = "Foouser"
-  username = "foo"
-  password = "defaultPasswordChangeMe"
-  enabled = true
+#   name = "Foouser"
+#   username = "foo"
+#   password = "defaultPasswordChangeMe"
+#   enabled = true
+# }
+
+resource "random_string" "random" {
+  length           = 5
+  special = false
+}
+
+resource "aws_secretsmanager_secret" "rancher_admin_password" {
+  name = "${var.name}-${random_string.random.result}"
+
+  tags = {
+    purpose = "rancher admin secret"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "rancher_admin_password" {
+  secret_id     = aws_secretsmanager_secret.rancher_admin_password.id
+  secret_string = random_password.rancher_admin_password.result
 }

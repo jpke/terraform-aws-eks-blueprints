@@ -7,6 +7,7 @@ terraform apply -target="module.vpc"
 terraform apply -target="module.external_nlb"
 terraform apply -target="module.eks_blueprints"
 terraform apply -target="module.eks_blueprints_kubernetes_addons"
+kubectl get secret --namespace argocd argocd-initial-admin-secret -o go-template='{{.data.password|base64decode}}{{"\n"}}'
 terraform apply -target="module.rancher"
 ```
 
@@ -44,6 +45,7 @@ Install demo workload via rancher-installed argocd
 Add custom grafana dashboard via argo
 
 Stretch goals:
+Leverage security groups for pods for external nlb
 Install rancher via tf, instead of argocd
 Install bansai logging operator via rancher
 Install loki via argo
