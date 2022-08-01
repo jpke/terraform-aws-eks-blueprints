@@ -269,4 +269,14 @@ module "rancher" {
   name = local.name
   domain = "https://${local.rancher_domain}"
   bootstrapPassword = local.rancher_bootstrapPassword
+
+  clusters = {
+    one = {
+      name = "rancher-created"
+      region = local.region
+      kubernetes_version = "1.22"
+      securityGroups = [module.eks_blueprints.worker_node_security_group_id]
+      subnets = module.vpc.private_subnets
+    }
+  }
 }

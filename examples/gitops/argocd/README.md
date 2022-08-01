@@ -14,9 +14,10 @@ terraform apply -target="module.rancher"
 ## Destroy
 
 ```
+remove clusters creeted by rancher
 terraform destroy -target="module.rancher"
 
-// remove workload from argocd_applications
+remove workload from argocd_applications
 terraform apply -target="module.eks_blueprints_kubernetes_addons"
 // set argocd_applications = {}
 terraform apply -target="module.eks_blueprints_kubernetes_addons"
