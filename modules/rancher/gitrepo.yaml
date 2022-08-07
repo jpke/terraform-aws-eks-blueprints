@@ -1,0 +1,13 @@
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: $NAME
+  namespace: $NAMESPACE
+spec:
+  branch: $BRANCH
+  paths:
+  $PATHS
+  repo: $REPO
+  targetNamespace: $TARGETNAMESPACE
+  targets:
+  - clusterName: $CLUSTERNAME

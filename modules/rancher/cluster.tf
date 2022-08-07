@@ -22,29 +22,6 @@ resource "rancher2_cluster" "eks" {
   }
 }
 
-# resource "rancher2_cluster" "eks" {
-#   provider = rancher2.admin
-
-#   name = var.clusters.one.name
-#   description = "Terraform EKS cluster - one"
-#   eks_config_v2 {
-#     cloud_credential_id = rancher2_cloud_credential.manage_eks_permissions.id
-#     region = var.clusters.one.region
-#     kubernetes_version = var.clusters.one.kubernetes_version
-#     logging_types = []
-#     node_groups {
-#       name = var.clusters.one.name
-#       instance_type = "t3.medium"
-#       desired_size = 2
-#       max_size = 2
-#     }
-#     private_access = false
-#     public_access = true
-#     security_groups = var.clusters.one.securityGroups
-#     subnets = var.clusters.one.subnets
-#   }
-# }
-
 resource "rancher2_app_v2" "eks" {
   provider = rancher2.admin
   for_each = var.clusters

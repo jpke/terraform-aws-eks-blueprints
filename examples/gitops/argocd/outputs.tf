@@ -16,3 +16,8 @@ output "rancher_admin_password_secret" {
   description = "Retrieve rancher admin password secret"
   value = module.rancher.rancher_admin_password_secret
 }
+
+output "rancher_user_password_secret" {
+  description = "Retrieve rancher user password secret"
+  value = module.rancher.rancher_user_password_secret
+}

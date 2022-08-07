@@ -17,3 +17,11 @@ variable "bootstrapPassword" {
 variable "clusters" {
   default = {}
 }
+
+variable "users" {
+  default = {}
+}
+
+variable "gitrepos" {
+  default = {}
+}

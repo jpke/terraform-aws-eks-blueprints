@@ -191,7 +191,8 @@ module "eks_blueprints_kubernetes_addons" {
   #   }
   #   # workloads = {
   #   #   path               = "envs/dev"
-  #   #   repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
+  #   #   # repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
+  #   #   repo_url           = "https://github.com/jpke/eks-blueprints-workloads.git"
   #   #   add_on_application = false
   #   # }
   # }
@@ -237,6 +238,7 @@ module "vpc" {
   default_security_group_tags   = { Name = "${local.name}-default" }
 
   public_subnet_tags = {
+    "kubernetes.io/cluster/rancher-created" = "shared"
     "kubernetes.io/cluster/${local.name}" = "shared"
     "kubernetes.io/role/elb"              = 1
   }
@@ -270,13 +272,34 @@ module "rancher" {
   domain = "https://${local.rancher_domain}"
   bootstrapPassword = local.rancher_bootstrapPassword
 
-  clusters = {
-    one = {
-      name = "rancher-created"
-      region = local.region
-      kubernetes_version = "1.22"
-      securityGroups = [module.eks_blueprints.worker_node_security_group_id]
-      subnets = module.vpc.private_subnets
-    }
-  }
+  # users = {
+  #   test-user = {
+  #     clusters = [
+  #       "one"
+  #     ]
+  #   }
+  # }
+
+  # clusters = {
+  #   one = {
+  #     name = "rancher-created"
+  #     region = local.region
+  #     kubernetes_version = "1.22"
+  #     securityGroups = [module.eks_blueprints.worker_node_security_group_id]
+  #     subnets = module.vpc.private_subnets
+  #   }
+  # }
+
+  # gitrepos = {
+  #   helm = {
+  #     namespace = "fleet-default"
+  #     branch = "downstream"
+  #     paths = "- single-cluster/helm"
+  #     repo = "https://github.com/jpke/fleet-examples.git"
+  #     targetNamespace = ""
+  #     clusters = [
+  #       "one"
+  #     ]
+  #   }
+  # }
 }
