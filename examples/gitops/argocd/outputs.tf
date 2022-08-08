@@ -9,7 +9,12 @@ output "configure_kubectl" {
 
 output "argocd_admin_password_secret" {
   description = "Retrieve argocd admin password secret"
-  value = "kubectl get secret --namespace argocd argocd-initial-admin-secret -o go-template='{{.data.password|base64decode}}{{\"\n\"}}'"
+  value = "kubectl get secret --namespace argocd argocd-initial-admin-secret -o go-template='{{.data.password|base64decode}}'"
+}
+
+output "rancher_bootstrap_password_secret" {
+  description = "Retrieve rancher bootstrap password secret"
+  value = "aws secretsmanager get-secret-value --query SecretString --secret-id ${aws_secretsmanager_secret.rancher_bootstrap_password.name}"
 }
 
 output "rancher_admin_password_secret" {

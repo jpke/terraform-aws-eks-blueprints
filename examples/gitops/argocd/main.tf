@@ -29,7 +29,7 @@ provider "helm" {
 }
 
 provider "kubectl" {
-  apply_retry_count      = 30
+  # apply_retry_count      = 30
   host                   = module.eks_blueprints.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
   load_config_file       = false
@@ -56,7 +56,6 @@ locals {
 
   domain = "jpearnest.com"
   rancher_domain = "rancher.eks-blueprints.${local.domain}"
-  rancher_bootstrapPassword = "initialRancherAdminPassword"
 
   tags = {
     Blueprint  = local.name
@@ -170,7 +169,7 @@ module "eks_blueprints_kubernetes_addons" {
   #       }
   #       rancher = {
   #         enable   = true
-  #         bootstrapPassword = local.rancher_bootstrapPassword
+  #         bootstrapPassword = random_password.rancher_bootstrap_password.result
   #         hostname = local.rancher_domain
   #         ingress = {
   #           extraAnnotations = {
@@ -270,7 +269,7 @@ module "rancher" {
 
   name = local.name
   domain = "https://${local.rancher_domain}"
-  bootstrapPassword = local.rancher_bootstrapPassword
+  bootstrapPassword = random_password.rancher_bootstrap_password.result
 
   # users = {
   #   test-user = {
@@ -294,7 +293,9 @@ module "rancher" {
   #   helm = {
   #     namespace = "fleet-default"
   #     branch = "downstream"
-  #     paths = "- single-cluster/helm"
+  #     paths = [
+  #       "single-cluster/helm"
+  #     ]
   #     repo = "https://github.com/jpke/fleet-examples.git"
   #     targetNamespace = ""
   #     clusters = [

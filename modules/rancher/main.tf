@@ -23,17 +23,7 @@ provider "rancher2" {
 
   api_url = rancher2_bootstrap.admin.url
   token_key = rancher2_bootstrap.admin.token
-  # insecure = true
 }
-
-# resource "rancher2_user" "foo" {
-#   provider = rancher2.admin
-
-#   name = "Foouser"
-#   username = "foo"
-#   password = "defaultPasswordChangeMe"
-#   enabled = true
-# }
 
 resource "random_string" "random" {
   length           = 5

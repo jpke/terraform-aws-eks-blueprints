@@ -15,7 +15,7 @@ terraform apply -target="module.rancher"
 ## Destroy
 
 ```
-// remove clusters created by rancher, then
+// remove clusters, user, and gitrepo created by rancher, then
 terraform destroy -target="module.rancher"
 
 //remove workload from argocd_applications, then
@@ -35,8 +35,6 @@ terraform destroy -target="module.vpc"
 ## Todo
 
 ```
-Use terraform-generated random string for rancher bootstrap password
-
 Stretch goals:
 Leverage security groups for pods for external nlb
 Install rancher via tf, instead of argocd
