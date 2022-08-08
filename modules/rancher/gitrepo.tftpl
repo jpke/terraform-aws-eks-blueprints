@@ -1,0 +1,18 @@
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  branch: ${branch}
+  paths:
+  %{ for path in paths ~}
+- ${path}
+  %{ endfor ~}
+
+  repo: ${repo}
+  targetNamespace: ${targetNamespace}
+  targets:
+  %{ for cluster_id in clusters ~}
+- clusterName: ${cluster_id}
+  %{ endfor ~}
