@@ -16,6 +16,7 @@ terraform apply -target="module.rancher"
 
 ```
 // remove clusters, user, and gitrepo created by rancher, then
+terraform apply -target="module.rancher"
 terraform destroy -target="module.rancher"
 
 //remove workload from argocd_applications, then
